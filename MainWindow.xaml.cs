@@ -3,6 +3,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 
 namespace WindowsBulkPhotoDetailsEditor;
@@ -15,6 +18,62 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+    }
+
+    private void Thumbnail_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount != 2 || sender is not FrameworkElement { DataContext: PhotoRow photo })
+        {
+            return;
+        }
+
+        e.Handled = true;
+        BitmapImage fullPhoto;
+        try
+        {
+            using var file = File.Open(photo.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+            fullPhoto = new BitmapImage();
+            fullPhoto.BeginInit();
+            fullPhoto.CacheOption = BitmapCacheOption.OnLoad;
+            fullPhoto.StreamSource = file;
+            fullPhoto.EndInit();
+        }
+        catch (Exception error) when (PhotoReader.IsImageReadError(error) || error is UnauthorizedAccessException)
+        {
+            MessageBox.Show(this, $"Could not open {photo.FileName}.{Environment.NewLine}{error.Message}",
+                "Photo preview failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        var dpi = VisualTreeHelper.GetDpi(this);
+        double photoWidth = fullPhoto.PixelWidth / dpi.DpiScaleX;
+        double photoHeight = fullPhoto.PixelHeight / dpi.DpiScaleY;
+        var preview = new Window
+        {
+            Owner = this,
+            Title = photo.FileName,
+            Icon = Icon,
+            ShowInTaskbar = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Width = Math.Clamp(photoWidth + 32, 240, ActualWidth),
+            Height = Math.Clamp(photoHeight + 64, 180, ActualHeight),
+            MinWidth = 240,
+            MinHeight = 180,
+            UseLayoutRounding = true,
+            Content = new Image
+            {
+                Source = fullPhoto,
+                Stretch = Stretch.Uniform
+            }
+        };
+        preview.PreviewKeyDown += (_, args) =>
+        {
+            if (args.Key == Key.Escape)
+            {
+                preview.Close();
+            }
+        };
+        preview.ShowDialog();
     }
 
     private void SavePhoto_Click(object sender, RoutedEventArgs e)

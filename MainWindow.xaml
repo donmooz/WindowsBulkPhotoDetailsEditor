@@ -39,7 +39,9 @@
                     <DataGridTemplateColumn Header="Thumbnail" IsReadOnly="True" Width="106">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Image Source="{Binding Thumbnail}" Width="94" Height="64" Stretch="Uniform"/>
+                                <Image Source="{Binding Thumbnail}" Width="94" Height="64" Stretch="Uniform"
+                                       MouseLeftButtonDown="Thumbnail_MouseLeftButtonDown"
+                                       ToolTip="Double-click to view the full-size photo"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

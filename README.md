@@ -20,5 +20,6 @@ dotnet run --no-build
 5. Edit two JPEGs and choose **File → Save**. Reopen the folder and confirm that both edits persisted and the menu item is disabled.
 6. Make an edit and choose **File → Exit** or close the window. Check that **Cancel** keeps the window and edits, **No** exits without saving, and **Yes** saves before exiting. If a file cannot be saved, the app reports the error and stays open.
 7. Choose **Help → About** and check that the dialog shows the version and describes the app.
+8. Double-click a thumbnail. Resize the modal window in both directions and check that the entire photo stays visible and keeps its proportions. Press Escape to close the preview.
 
 The app skips unsupported or unreadable images and scans only the selected folder.

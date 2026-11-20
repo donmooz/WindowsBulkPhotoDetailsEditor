@@ -15,6 +15,7 @@ internal sealed class PhotoRow(string path, BitmapSource thumbnail, PhotoDetails
     private PhotoDetails? beforeEdit;
 
     public string FileName => Path.GetFileName(path);
+    internal string FilePath => path;
     public BitmapSource Thumbnail { get; } = thumbnail;
     public bool HasChanges => current != saved;
 

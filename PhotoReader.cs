@@ -73,6 +73,6 @@ internal static class PhotoReader
         }
     }
 
-    private static bool IsImageReadError(Exception error) =>
+    internal static bool IsImageReadError(Exception error) =>
         error is IOException or FormatException or NotSupportedException or COMException;
 }
