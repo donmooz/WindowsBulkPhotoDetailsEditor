@@ -1,7 +1,7 @@
 <Window x:Class="WindowsBulkPhotoDetailsEditor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Bulk Photo Details Editor" Width="1080" Height="680"
+        Title="Bulk Photo Details Editor" Icon="Assets/PhotoDetails.ico" Width="1080" Height="680"
         MinWidth="640" MinHeight="360" UseLayoutRounding="True">
     <Grid Margin="20">
         <Grid.RowDefinitions>
