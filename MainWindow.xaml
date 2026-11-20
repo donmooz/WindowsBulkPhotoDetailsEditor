@@ -3,52 +3,63 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Bulk Photo Details Editor" Icon="Assets/PhotoDetails.ico" Width="1080" Height="680"
         MinWidth="640" MinHeight="360" UseLayoutRounding="True">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="SaveMenuItem" Header="_Save" IsEnabled="False" Click="SaveAll_Click"/>
+                <MenuItem Header="E_xit" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Click="About_Click"/>
+            </MenuItem>
+        </Menu>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <DockPanel Margin="0,0,0,14">
-            <Button x:Name="SelectFolderButton" DockPanel.Dock="Left"
-                    Click="SelectFolder_Click" Padding="14,6" Margin="0,0,12,0"
-                    Content="_Select Folder…"/>
-            <TextBlock x:Name="FolderPath" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"
-                       ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
-        </DockPanel>
+            <DockPanel Margin="0,0,0,14">
+                <Button x:Name="SelectFolderButton" DockPanel.Dock="Left"
+                        Click="SelectFolder_Click" Padding="14,6" Margin="0,0,12,0"
+                        Content="_Select Folder…"/>
+                <TextBlock x:Name="FolderPath" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+            </DockPanel>
 
-        <DataGrid x:Name="PhotosGrid" Grid.Row="1" AutoGenerateColumns="False"
-                  AutomationProperties.Name="Photographs"
-                  CanUserAddRows="False" CanUserDeleteRows="False"
-                  CanUserReorderColumns="False" HeadersVisibility="Column"
-                  SelectionUnit="Cell" RowHeight="74" EnableRowVirtualization="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="File name" IsReadOnly="True" Binding="{Binding FileName}" Width="2*" MinWidth="140"/>
-                <DataGridTemplateColumn Header="Thumbnail" IsReadOnly="True" Width="106">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Image Source="{Binding Thumbnail}" Width="94" Height="64" Stretch="Uniform"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Title" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="90"/>
-                <DataGridTextColumn Header="Subject" Binding="{Binding Subject, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="90"/>
-                <DataGridTextColumn Header="Comments" Binding="{Binding Comments, UpdateSourceTrigger=PropertyChanged}" Width="2*" MinWidth="120"/>
-                <DataGridTemplateColumn Header="Save" Width="82" IsReadOnly="True" CanUserSort="False">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Save" Padding="10,4"
-                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                    IsEnabled="{Binding HasChanges}" Click="SavePhoto_Click"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+            <DataGrid x:Name="PhotosGrid" Grid.Row="1" AutoGenerateColumns="False"
+                      AutomationProperties.Name="Photographs"
+                      CanUserAddRows="False" CanUserDeleteRows="False"
+                      CanUserReorderColumns="False" HeadersVisibility="Column"
+                      SelectionUnit="Cell" RowHeight="74" EnableRowVirtualization="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="File name" IsReadOnly="True" Binding="{Binding FileName}" Width="2*" MinWidth="140"/>
+                    <DataGridTemplateColumn Header="Thumbnail" IsReadOnly="True" Width="106">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Thumbnail}" Width="94" Height="64" Stretch="Uniform"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Title" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="90"/>
+                    <DataGridTextColumn Header="Subject" Binding="{Binding Subject, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="90"/>
+                    <DataGridTextColumn Header="Comments" Binding="{Binding Comments, UpdateSourceTrigger=PropertyChanged}" Width="2*" MinWidth="120"/>
+                    <DataGridTemplateColumn Header="Save" Width="82" IsReadOnly="True" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Save" Padding="10,4"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        IsEnabled="{Binding HasChanges}" Click="SavePhoto_Click"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
 
-        <TextBlock x:Name="StatusText" Grid.Row="2" Margin="0,10,0,0" TextWrapping="Wrap"
-                   Text="Select a folder to view its photos."/>
-    </Grid>
+            <TextBlock x:Name="StatusText" Grid.Row="2" Margin="0,10,0,0" TextWrapping="Wrap"
+                       Text="Select a folder to view its photos."/>
+        </Grid>
+    </DockPanel>
 </Window>

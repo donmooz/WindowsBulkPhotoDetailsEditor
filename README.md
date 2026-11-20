@@ -17,5 +17,8 @@ dotnet run --no-build
 2. Double-click a **Title**, **Subject**, or **Comments** cell and change its value. Confirm **Save** enables for that row only. Restore the original values and confirm the button disables again.
 3. Edit the row and click **Save**. Confirm the button disables, then reopen the folder and check that the new values persisted.
 4. Mark a test JPEG read-only in Explorer and try to save an edit. Confirm an error dialog names the file and the row remains editable with **Save** enabled. Clear the read-only attribute and retry.
+5. Edit two JPEGs and choose **File → Save**. Reopen the folder and confirm that both edits persisted and the menu item is disabled.
+6. Make an edit and choose **File → Exit** or close the window. Check that **Cancel** keeps the window and edits, **No** exits without saving, and **Yes** saves before exiting. If a file cannot be saved, the app reports the error and stays open.
+7. Choose **Help → About** and check that the dialog shows the version and describes the app.
 
 The app skips unsupported or unreadable images and scans only the selected folder.
