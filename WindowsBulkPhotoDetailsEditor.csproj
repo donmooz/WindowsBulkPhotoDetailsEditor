@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <Resource Include="Assets\PhotoDetails.ico" />
+    <PackageReference Include="MetadataExtractor" Version="2.9.3" />
   </ItemGroup>
 
 </Project>

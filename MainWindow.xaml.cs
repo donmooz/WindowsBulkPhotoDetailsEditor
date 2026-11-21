@@ -48,6 +48,18 @@ public partial class MainWindow : Window
         var dpi = VisualTreeHelper.GetDpi(this);
         double photoWidth = fullPhoto.PixelWidth / dpi.DpiScaleX;
         double photoHeight = fullPhoto.PixelHeight / dpi.DpiScaleY;
+        var metadataButton = new Button
+        {
+            Content = "_View Metadata",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(8),
+            Padding = new Thickness(10, 4, 10, 4)
+        };
+        DockPanel.SetDock(metadataButton, Dock.Bottom);
+        var content = new DockPanel();
+        content.Children.Add(metadataButton);
+        content.Children.Add(new Image { Source = fullPhoto, Stretch = Stretch.Uniform });
+
         var preview = new Window
         {
             Owner = this,
@@ -56,16 +68,13 @@ public partial class MainWindow : Window
             ShowInTaskbar = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Width = Math.Clamp(photoWidth + 32, 240, ActualWidth),
-            Height = Math.Clamp(photoHeight + 64, 180, ActualHeight),
+            Height = Math.Clamp(photoHeight + 104, 180, ActualHeight),
             MinWidth = 240,
             MinHeight = 180,
             UseLayoutRounding = true,
-            Content = new Image
-            {
-                Source = fullPhoto,
-                Stretch = Stretch.Uniform
-            }
+            Content = content
         };
+        metadataButton.Click += (_, _) => new MetadataWindow(preview, photo.FilePath).ShowDialog();
         preview.PreviewKeyDown += (_, args) =>
         {
             if (args.Key == Key.Escape)

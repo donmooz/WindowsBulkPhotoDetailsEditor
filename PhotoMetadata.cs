@@ -12,8 +12,40 @@ internal static class PhotoMetadata
     private static readonly PropertyKey Subject = new(SummaryInformation, 3);
     private static readonly PropertyKey Comment = new(SummaryInformation, 6);
 
+    public static PhotoDetails Read(string path)
+    {
+        Guid interfaceId = typeof(IPropertyStore).GUID;
+        CheckResult(SHGetPropertyStoreFromParsingName(path, IntPtr.Zero, 0, in interfaceId, out var store),
+            "Open the Windows file properties");
+        try
+        {
+            return new PhotoDetails(ReadValue(Title), ReadValue(Subject), ReadValue(Comment));
+        }
+        finally
+        {
+            Marshal.ReleaseComObject(store);
+        }
+
+        string ReadValue(PropertyKey key)
+        {
+            int result = store.GetValue(in key, out var value);
+            try
+            {
+                CheckResult(result, "Read the Windows file property");
+                return value.Type == VariantString ? Marshal.PtrToStringUni(value.Pointer) ?? "" : "";
+            }
+            finally
+            {
+                PropVariantClear(ref value);
+            }
+        }
+    }
+
     public static void Save(string path, PhotoDetails saved, PhotoDetails current)
     {
+        bool hasSharedTitleFallback = Path.GetExtension(path).ToLowerInvariant()
+            is ".jpg" or ".jpeg" or ".jpe" or ".jfif" or ".tif" or ".tiff";
+
         Guid interfaceId = typeof(IPropertyStore).GUID;
         CheckResult(SHGetPropertyStoreFromParsingName(path, IntPtr.Zero, ReadWrite, in interfaceId, out var store),
             "Open the file properties for writing");
@@ -21,7 +53,12 @@ internal static class PhotoMetadata
         try
         {
             SetChangedValue(store, Title, saved.Title, current.Title, "Title");
-            SetChangedValue(store, Subject, saved.Subject, current.Subject, "Subject");
+            // Windows can write Title to ImageDescription, which is also a fallback
+            // for Subject. Keep an explicit XPSubject value, even when it is empty.
+            if (current.Subject != saved.Subject || (hasSharedTitleFallback && current.Title != saved.Title))
+            {
+                SetValue(store, Subject, current.Subject, "Subject", keepEmpty: hasSharedTitleFallback);
+            }
             SetChangedValue(store, Comment, saved.Comments, current.Comments, "Comments");
             CheckResult(store.Commit(), "Save the file properties");
         }
@@ -33,13 +70,16 @@ internal static class PhotoMetadata
 
     private static void SetChangedValue(IPropertyStore store, PropertyKey key, string saved, string current, string field)
     {
-        if (current == saved)
+        if (current != saved)
         {
-            return;
+            SetValue(store, key, current, field);
         }
+    }
 
+    private static void SetValue(IPropertyStore store, PropertyKey key, string current, string field, bool keepEmpty = false)
+    {
         // VT_EMPTY removes the property when the user clears the cell.
-        var value = current.Length == 0 ? default : new PropVariant
+        var value = current.Length == 0 && !keepEmpty ? default : new PropVariant
         {
             Type = VariantString,
             Pointer = Marshal.StringToCoTaskMemUni(current)
@@ -67,6 +107,9 @@ internal static class PhotoMetadata
     [DllImport("shell32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
     private static extern int SHGetPropertyStoreFromParsingName(string path, IntPtr bindContext,
         uint flags, in Guid interfaceId, [MarshalAs(UnmanagedType.Interface)] out IPropertyStore store);
+
+    [DllImport("ole32.dll", ExactSpelling = true)]
+    private static extern int PropVariantClear(ref PropVariant value);
 
     [StructLayout(LayoutKind.Sequential)]
     private readonly struct PropertyKey(Guid formatId, uint propertyId)
